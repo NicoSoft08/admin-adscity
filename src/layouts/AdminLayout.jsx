@@ -8,11 +8,9 @@ const homeURL = process.env.REACT_APP_HOME_URL;
 const authURL = process.env.REACT_APP_AUTH_URL;
 
 export default function AdminLayout() {
-    const { currentUser, userRole, userData } = useContext(AuthContext);
+    const { currentUser, userRole } = useContext(AuthContext);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-
-    console.log(currentUser, userData);
     useEffect(() => {
         if (!currentUser) {
             window.location.href = `${authURL}/signin`;

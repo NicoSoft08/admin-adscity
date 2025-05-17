@@ -1,27 +1,28 @@
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 
-const fetchMe = async (idToken) => {
-    if (!idToken) {
-        throw new Error('Token d\'authentification manquant');
-    }
+const fetchMe = async (token = null) => {
+    const headers = token
+        ? { 'Authorization': `Bearer ${token}` }
+        : {};
+
     const response = await fetch(`${backendUrl}/api/users/me`, {
         method: 'GET',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`,
-        },
+        headers,
+        credentials: 'include', // pour envoyer les cookies HTTP-only
     });
-    const result = await response.json();
-    return result;
-}
+
+    if (!response.ok) throw new Error('Not authenticated');
+
+    return response.json();
+};
 
 const fetchUserData = async (userID) => {
     console.log(userID)
     try {
         const response = await fetch(`${backendUrl}/api/users/user/${userID}`, {
             method: 'GET',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             }
