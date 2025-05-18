@@ -274,7 +274,7 @@ export const PostsCategoryChart = ({ posts }) => {
                     <YAxis
                         dataKey="category"
                         type="category"
-                        tick={{ fontSize: 12 }}
+                        tick={{ fontSize: 11 }}
                     />
                     <Tooltip
                         formatter={(value) => [value, isFrenchlanguage ? 'Nombre d\'annonces' : 'Number of posts']}
