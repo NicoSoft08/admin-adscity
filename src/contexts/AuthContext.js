@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { fetchMe } from '../routes/userRoutes';
 import { auth } from '../firebaseConfig';
 import Loading from '../customs/Loading';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { logoutUser } from '../routes/authRoutes';
 
 
@@ -23,50 +23,31 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            setLoading(true);
-
+        const checkSession = async () => {
             try {
+                setLoading(true);
+
+                const user = await fetchMe();
                 if (user) {
-                    // 🔐 Obtenir le token et le stocker en cookie cross-domain
-                    const idToken = await user.getIdToken(true);
-
-                    Cookies.set('authToken', idToken, {
-                        expires: 7,
-                        secure: true,
-                        sameSite: 'None',
-                        domain: '.adscity.net',
-                        path: '/',
-                    });
-
-                    setCurrentUser(user);
+                    setCurrentUser(user.data.uid);
+                    setUserData(user.data);
+                    setUserRole(user.data.role || null);
                 } else {
-                    // 🔁 Peut-être que l'user est déjà loggé via cookie uniquement
                     setCurrentUser(null);
-                }
-
-                // 🔎 Récupérer l'utilisateur via l’API privée
-                const response = await fetchMe();
-
-                if (response?.success && response.data) {
-                    setUserData(response.data);
-                    setUserRole(response.data.role);
-                } else {
-                    setUserData(null);
                     setUserRole(null);
+                    setUserData(null);
                 }
-
-            } catch (err) {
-                console.error("Erreur AuthContext:", err);
+            } catch (error) {
+                console.error('Erreur lors de la récupération de la session:', error);
                 setCurrentUser(null);
-                setUserData(null);
                 setUserRole(null);
+                setUserData(null);
             } finally {
                 setLoading(false);
             }
-        });
+        };
 
-        return () => unsubscribe();
+        checkSession();
     }, []);
 
 
