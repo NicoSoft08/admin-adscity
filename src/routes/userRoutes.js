@@ -1,6 +1,5 @@
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-
 const fetchMe = async () => {
     const response = await fetch(`${backendUrl}/api/users/me`, {
         method: 'GET',
